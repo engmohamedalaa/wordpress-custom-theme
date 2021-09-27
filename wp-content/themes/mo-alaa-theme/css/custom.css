@@ -1,0 +1,49 @@
+.page-section {padding: 3rem 0;}
+.project-category-span{
+  background: #f1f1f1;
+  padding: 5px;
+  border-radius: 10px;
+  margin: 0 4px;
+}
+#main-navigation a{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 0.95rem;
+  color: #fff;
+  letter-spacing: 0.0625em;
+  text-decoration: unset;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+#main-navigation a:hover, #main-navigation li.active a{color: #ffc800; text-decoration: underline;}
+#main-navigation li.active{font-weight: bold;}
+#latest_news h5{
+  text-align: center;
+  padding: 15px 0px;
+  color: #666;
+}
+#latest_news a{text-decoration: unset;}
+#latest_news p{
+  text-align: center;
+  color: #444;
+}
+#latest_news img{
+  height: 4.75rem;
+  padding: 4px;
+}
+#latest_news .single-news-box{
+  background: #f1f1f1;
+  padding-bottom: 2px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+#page-404{background: #f1f1f1;}
+#page-404 h1{font-size: 10rem; color: #ffc800;}
+#projects_filter{
+  clear: both;
+  overflow: hidden;
+  height: 150px;
+  line-height: 55px;
+  background: #f1f1f1;
+  margin-bottom: 30px;
+  border-radius: 10px;
+}
