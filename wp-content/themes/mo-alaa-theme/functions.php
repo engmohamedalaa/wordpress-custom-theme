@@ -157,7 +157,7 @@ function wc_place_order($type){
   if(empty($shipping_selected_state)){
     $shipping_selected_state = sanitize_text_field(base64_decode($_POST['scode']));
   }
-  $shipping_stored_state   = $wpdb->get_row("SELECT name_en FROM wp_tagerly_states WHERE state_code = '$shipping_selected_state'")->name_en;
+  $shipping_stored_state   = $wpdb->get_row("SELECT name_en FROM wp_custom_states WHERE state_code = '$shipping_selected_state'")->name_en;
   //$shipping_state_code     = sanitize_text_field(base64_decode($_POST['scode']));
   $shipping_city           = sanitize_text_field($_POST['customer_city']);
   $customer_phone2         = sanitize_text_field($_POST['customer_phone2']);
@@ -192,7 +192,7 @@ function wc_place_order($type){
       //$real_cod          = $tg_fees + $subtotal_shipping;
       $real_cod = $subtotal_shipping;
     }
-    $apply_coupon = tagerly_apply_coupons($wpdb, $order, $shipping_cost, $tg_fees);
+    $apply_coupon = wc_apply_coupons($wpdb, $order, $shipping_cost, $tg_fees);
 		//exit;
     if(!empty($apply_coupon)){
       if(isset($apply_coupon['tg_fees'])){
@@ -219,20 +219,20 @@ function wc_place_order($type){
     //Apply Shipping
     tg_apply_shipping($shipp_value, $shipping_cost, $shipping_selected_state, $order);
     if($type == 'kata3y'){
-      //Apply Tagerly Fees in case kata3y
+      //Apply Fees in case kata3y
       tg_apply_fees($com_name_aft, $tg_fees, $order);
     }
     //Save real_cod at billing_cod before make pay by wallet and empty the real_cod due the wallet transaction
     $billing_cod = $real_cod;
     //Apply Payment Method
-    if($payment_method == 'tagerly_wallet'){
+    if($payment_method == 'wallet_gateway'){
       $wallet = get_customer_transactions_by_id($current_user->ID);
       if($wallet < $real_cod){
         $payment_method = 'cod';
         $method_title   = 'الدفع عند الاستلام';
       }else{
-        $payment_method = 'tagerly_wallet_gateway';
-        $method_title   = 'محفظة تاجرلي';
+        $payment_method = 'wallet_gateway';
+        $method_title   = 'محفظة';
         if(!empty($billing_cod) && $billing_cod > 0){
           $insert_wallet  = tg_insert_wallet_transaction($order->get_id(), $billing_cod, $current_user->ID);
           if($insert_wallet){
@@ -253,16 +253,16 @@ function wc_place_order($type){
     // echo '</pre>';
     // exit;
     //save needed order data
-		$headers = 'From: info@tagerly.net \r\n Reply-To: info@tagerly.net \r\n';
+		$headers = 'From: info@egy2d.com \r\n Reply-To: info@egy2d.com \r\n';
     if($billing_cod > 0){
       $order->update_status("processing", '', false);
     }else{
       $order->update_status("cancelled", 'cancelled because billing_cod < 0', false);
-			//wp_mail('m.alaa@tagerly.net', 'Tagerly Order Cancellation', 'Order #'.$order->get_id().' cancelled because billing_cod < 0', $headers);
+			//wp_mail('m.alaa@egy2d.com', 'Order Cancellation', 'Order #'.$order->get_id().' cancelled because billing_cod < 0', $headers);
     }
 		if(!isset($tg_fees) || $tg_fees == 0){
-			//$order->update_status("cancelled", 'cancelled because tagerly fees <= 0', false);
-			//wp_mail('m.alaa@tagerly.net', 'Tagerly Order Fees Issue', 'Order #'.$order->get_id().' tagerly fees <= 0', $headers); //cancelled because
+			//$order->update_status("cancelled", 'cancelled because fees <= 0', false);
+			//wp_mail('m.alaa@egy2d.com', ' Order Fees Issue', 'Order #'.$order->get_id().' fees <= 0', $headers); //cancelled because
 			if(empty(get_post_meta($order->get_id(), 'tg_zero_fees', true))){
 				if(empty($billing_cod) || empty($real_cod)){
 					update_post_meta($order->get_id(), 'tg_zero_fees', 'zero_cod');
@@ -280,13 +280,11 @@ function wc_place_order($type){
     update_post_meta($order->get_id() , 'real_cod', $real_cod);
     update_post_meta($order->get_id() , 'customer_notes', $customer_note);
     update_post_meta($order->get_id() , 'order_type', $type);
-    update_post_meta($order->get_id() , '_created_via', 'tagerly_new_checkout');
-    update_post_meta($order->get_id(), 'ecommerce_type', 'tagerly');
     //Empty cart & cookies & redirect to thank you page
     // WC()->cart->empty_cart();
 		// var_dump($tg_fees);
 		// exit;
-    tg_unset_cookies(); //@ new-tagerly/includes/tagerly-functions.php
+    tg_unset_cookies(); 
     wp_redirect(home_url('/thank-you/?id='.base64_encode($order->get_id())));
   }else{
     wp_redirect(home_url('/cart/?error=less_than_12'));
